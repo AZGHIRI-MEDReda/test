@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Results{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<div class="results-container">
+    <h1 class="results-title">Prediction Results</h1>
+    <div class="results-table">
+        <div class="results-column">
+            <h3>Positive Comments (<span id="positive-percentage">0</span>%)</h3>
+            <ul id="positive-comments">
+                <!-- Positive comments will be loaded here -->
+            </ul>
+        </div>
+        <div class="results-column">
+            <h3>Negative Comments (<span id="negative-percentage">0</span>%)</h3>
+            <ul id="negative-comments">
+                <!-- Negative comments will be loaded here -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('{{ url_for('get_results') }}')
+            .then(response => response.json())
+            .then(data => {
+                const positiveComments = data.positive_comments;
+                const negativeComments = data.negative_comments;
+                const positivePercentage = data.positive_percentage.toFixed(2);
+                const negativePercentage = data.negative_percentage.toFixed(2);
+
+                document.getElementById('positive-percentage').textContent = positivePercentage;
+                document.getElementById('negative-percentage').textContent = negativePercentage;
+
+                const positiveList = document.getElementById('positive-comments');
+                positiveComments.forEach(comment => {
+                    const li = document.createElement('li');
+                    li.textContent = comment;
+                    positiveList.appendChild(li);
+                });
+
+                const negativeList = document.getElementById('negative-comments');
+                negativeComments.forEach(comment => {
+                    const li = document.createElement('li');
+                    li.textContent = comment;
+                    negativeList.appendChild(li);
+                });
+            });
+    });
+</script>
+{% endblock %}
+
+

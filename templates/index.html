@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Product Details{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/styles.css">
+<div class="product-container">
+    <div class="highlight">
+        <div class="highlight-content">
+            <div class="highlight-text">
+                <h2>Nouveautés</h2>
+                <p>Notre nouveau catalogue avec les technologies les plus avancées</p>
+                <button>DECOUVRIR</button>
+            </div>
+            <div class="highlight-images">
+                <img src="{{ url_for('static', filename='product8.jpg') }}" alt="Image 1">
+                <img src="{{ url_for('static', filename='product3.jpg') }}" alt="Image 2">
+                <img src="{{ url_for('static', filename='product4.jpg') }}" alt="Image 3">
+                <img src="{{ url_for('static', filename='product7.jpg') }}" alt="Image 4">
+            </div>
+        </div>
+    </div>
+    <div class="product">
+        <div class="product-image">
+            <img src="{{ url_for('static', filename='product6.jpg') }}" alt="Product Image">
+        </div>
+        <div class="product-details">
+            <h2 class="product-title">Product Name</h2>
+            <p class="product-description">Description of the product goes here. It can be a few lines long.</p>
+            <p class="price">Price: $99.99</p>
+        </div>
+        <div class="product-comments">
+            <h3>Comments</h3>
+            <form id="comment-form">
+                <input type="text" name="name" id="name" placeholder="Your Name" required>
+                <textarea name="comment" id="comment" rows="4" placeholder="Leave your comment here" required></textarea>
+                <button type="submit">Predict</button>
+            </form>
+            <div id="comment-results" class="results">
+                <!-- Prediction results will be displayed here -->
+            </div>
+            <section id="testimonials">
+                <div class="testimonial-heading">
+                    <span>Comments</span>
+                    <h4>Clients Says</h4>
+                </div>
+                <div id="comments-list" class="testimonial-box-container">
+                    <!-- Comments list will be displayed here -->
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('comment-form').addEventListener('submit', predictComment);
+
+    async function predictComment(event) {
+        event.preventDefault();  // Empêche la soumission par défaut du formulaire
+        const commentText = document.getElementById('comment').value;
+        const name = document.getElementById('name').value;
+
+        const response = await fetch('{{ url_for('predict') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: name, comment: commentText })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            const resultDiv = document.getElementById('comment-results');
+            const stars = '★'.repeat(result.rating) + '☆'.repeat(5 - result.rating);
+            resultDiv.innerHTML = `<p>The sentiment of the comment is: <strong>${result.prediction}</strong></p>
+                                   <p>Rating: <strong>${stars}</strong></p>`;
+
+            // Optionally clear the form fields
+            document.getElementById('comment-form').reset();
+            // Reload comments to show the new one
+            displayComments();
+        } else {
+            console.error('Error:', response.statusText);
+        }
+    }
+
+    async function displayComments() {
+        const response = await fetch('{{ url_for('get_comments') }}');
+        const comments = await response.json();
+        const commentsList = document.getElementById('comments-list');
+        commentsList.innerHTML = '';
+
+        comments.forEach(comment => {
+            const user_name = comment.name || "Anonymous";
+            const user_handle = "@anonymous";
+            const user_img = "https://cdn3.iconfinder.com/data/icons/avatars-15/64/_Ninja-2-512.png";
+            const review_text = comment.comment || "No review text";
+            const predicted_sentiment = comment.sentiment === "Positive" ? "Positive" : "Negative";
+            const review_rating = predicted_sentiment === "Positive" ? 5 : 1;
+
+            const review_box = `
+                <div class="testimonial-box">
+                    <div class="box-top">
+                        <div class="profile">
+                            <div class="profile-img">
+                                <img src="${user_img}" />
+                            </div>
+                            <div class="name-user">
+                                <strong>${user_name}</strong>
+                                <span>${user_handle}</span>
+                            </div>
+                        </div>
+                        <div class="reviews">
+                            ${'★'.repeat(review_rating)}
+                            ${'☆'.repeat(5 - review_rating)}
+                        </div>
+                    </div>
+                    <div class="client-comment">
+                        <p>${review_text}</p>
+                    </div>
+                </div>
+            `;
+            commentsList.innerHTML += review_box;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', displayComments);
+</script>
+{% endblock %}
+

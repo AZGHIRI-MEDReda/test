@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-commerce Site{% endblock %}</title>
+
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>E-Shop</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">Accueil</a></li>
+                <li><a href="/nouveautes">Nouveautés</a></li>
+                <li><a href="/results">Prediction</a></li>
+                <li><a href="/panier"><i class="fas fa-shopping-cart"></i></a></li>
+            </ul>
+        </nav>
+        <div class="search-container">
+            <form class="search-form">
+                <input type="text" placeholder="Search...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <div class="header-right">
+            <nav>
+                <ul>
+                    <li><a href="/panier"><i class="fas fa-shopping-cart"></i></a></li>
+                    <li><a href="/login"><i class="fas fa-user"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="sidebar">
+        <!-- La barre latérale vide avec une image de fond -->
+    </div>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 E-Shop</p>
+    </footer>
+</body>
+</html>
+
+
