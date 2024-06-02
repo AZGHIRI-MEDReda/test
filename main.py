@@ -134,7 +134,7 @@ def get_results():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
 
 
     '''print("Prediction:", prediction_str, "Rating:", rating)  # Debug statement'''
